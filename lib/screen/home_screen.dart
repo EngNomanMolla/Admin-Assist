@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widgets/controller/home_controller.dart';
-import 'package:flutter_widgets/screen/banner_Ads/banner_ads_screen.dart';
-
-import 'package:flutter_widgets/screen/career_updates/career_updates_screen.dart';
-
-import 'package:flutter_widgets/screen/live_screen.dart/live_notice_screen.dart';
-import 'package:flutter_widgets/screen/mentor_post_screen/mentor_post_screen.dart';
-import 'package:flutter_widgets/screen/product_screen/product_screen.dart';
-import 'package:flutter_widgets/screen/user_management/user_management_screen.dart';
+import 'package:flutter_widgets/routes/app_routes.dart';
 import 'package:get/get.dart';
 
 class HomeContent extends StatelessWidget {
@@ -16,38 +9,42 @@ class HomeContent extends StatelessWidget {
     return GetBuilder<HomeController>(
       builder: (controller) {
         return SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildAddButton(
-                    "assets/icons/icon1.png",
+                    Icons.campaign_rounded,
                     "Add Notice",
                     controller.onAddNotice,
+                    Colors.orange,
                   ),
                   _buildAddButton(
-                    "assets/icons/icon2.png",
+                    Icons.view_carousel_rounded,
                     "Add Banner",
                     controller.onAddBanner,
+                    Colors.blue,
                   ),
                   _buildAddButton(
-                    "assets/icons/icon3.png",
+                    Icons.shopping_bag_rounded,
                     "Add Product",
                     controller.onAddProduct,
+                    Colors.pink,
                   ),
                   _buildAddButton(
-                    "assets/icons/icon4.png",
-                    "Add Career Post",
+                    Icons.work_rounded,
+                    "Add Career",
                     controller.onAddCareer,
+                    Colors.teal,
                   ),
                 ],
               ),
 
-              SizedBox(height: 25),
-              Row(
+              const SizedBox(height: 32),
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -61,70 +58,71 @@ class HomeContent extends StatelessWidget {
                   Text(
                     "See all",
                     style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 13,
+                      color: Colors.deepPurple,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                       fontFamily: 'Inter',
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 16),
 
               GridView.count(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.3,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 1.15,
                 children: [
                   _buildCard(
                     "${controller.liveNotices}",
                     "Live Notices",
-                    "assets/icons/icon5.png",
+                    Icons.notifications_active_rounded,
                     Colors.deepPurpleAccent,
                     true,
-                    onTap: () => Get.to(() => LiveNoticeScreen()),
+                    onTap: () => Get.toNamed(AppRoutes.LIVE_NOTICE),
                   ),
                   _buildCard(
                     "${controller.bannerAds}",
                     "Banner Ads",
-                    "assets/icons/icon6.png",
-                    Colors.white,
+                    Icons.branding_watermark_rounded,
+                    Colors.blue,
                     false,
-                    onTap: () => Get.to(() => const BannerAdsScreen()),
+                    onTap: () => Get.toNamed(AppRoutes.BANNER_ADS),
                   ),
                   _buildCard(
                     "${controller.products}",
                     "Products",
-                    "assets/icons/icon7.png",
-                    Colors.white,
+                    Icons.inventory_2_rounded,
+                    Colors.pink,
                     false,
-                    onTap: () => Get.to(() => const ProductScreen()),
+                    onTap: () => Get.toNamed(AppRoutes.PRODUCTS),
                   ),
                   _buildCard(
                     "${controller.careerUpdates}",
                     "Career Updates",
-                    "assets/icons/icon8.png",
-                    Colors.white,
+                    Icons.work_history_rounded,
+                    Colors.teal,
                     false,
-                    onTap: () => Get.to(() => const CareerUpdatesScreen()),
+                    onTap: () => Get.toNamed(AppRoutes.CAREER_UPDATES),
                   ),
                   _buildCard(
                     "${controller.users}",
                     "Users",
-                    "assets/icons/icon9.png",
-                    Colors.white,
+                    Icons.group_rounded,
+                    Colors.indigo,
                     false,
-                    onTap: () => Get.to(() => UserManagementScreen()),
+                    onTap: () => Get.toNamed(AppRoutes.USERS),
                   ),
                   _buildCard(
                     "${controller.mentorPosts}",
                     "Mentor Posts",
-                    "assets/icons/icon10.png",
-                    Colors.white,
+                    Icons.post_add_rounded,
+                    Colors.amber.shade700,
                     false,
-                    onTap: () => Get.to(() => MentorPostScreen()),
+                    onTap: () => Get.toNamed(AppRoutes.MENTOR_POSTS),
                   ),
                 ],
               ),
@@ -135,23 +133,26 @@ class HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildAddButton(String imagePath, String label, VoidCallback onTap) {
+  Widget _buildAddButton(IconData iconData, String label, VoidCallback onTap, Color tintColor) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
         children: [
-          CircleAvatar(
-            backgroundColor: Colors.grey.shade100,
-            radius: 28,
-            child: Image.asset(imagePath, height: 24, width: 24),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: tintColor.withOpacity(0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(iconData, size: 24, color: tintColor),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 10,
+            style: const TextStyle(
+              fontSize: 12,
               color: Colors.black87,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
               fontFamily: 'Inter',
             ),
           ),
@@ -163,77 +164,71 @@ class HomeContent extends StatelessWidget {
   Widget _buildCard(
     String count,
     String title,
-    String imagePath,
-    Color bgColor,
-    bool isPurple, {
+    IconData iconData,
+    Color tintColor,
+    bool isPrimary, {
     required VoidCallback onTap,
   }) {
+    final bgColor = isPrimary ? tintColor : Colors.white;
+    final textColor = isPrimary ? Colors.white : Colors.black87;
+    final subtitleColor = isPrimary ? Colors.white.withOpacity(0.9) : Colors.black54;
+    final iconColor = isPrimary ? Colors.white : tintColor;
+    final iconBgColor = isPrimary ? Colors.white.withOpacity(0.25) : tintColor.withOpacity(0.12);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: Offset(0, 4),
+              color: tintColor.withOpacity(isPrimary ? 0.35 : 0.06),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: isPurple
-                      ? Colors.white24
-                      : Colors.grey.shade50,
-                  child: Image.asset(
-                    imagePath,
-                    height: 18,
-                    width: 18,
-                    color: isPurple ? Colors.white : null,
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: iconBgColor,
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  child: Icon(iconData, size: 20, color: iconColor),
                 ),
-                Spacer(),
-                Text(
-                  count,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: isPurple ? Colors.white : Colors.black87,
-                    fontFamily: 'Inter',
-                  ),
-                ),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isPurple ? Colors.white70 : Colors.black54,
-                    fontFamily: 'Inter',
-                  ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: isPrimary ? Colors.white70 : Colors.grey.shade400,
                 ),
               ],
             ),
-            Positioned(
-              right: 0,
-              bottom: 10,
-              child: Container(
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isPurple ? Colors.white : Colors.grey.shade100,
-                ),
-                child: Icon(
-                  Icons.arrow_forward,
-                  size: 16,
-                  color: isPurple ? Colors.deepPurpleAccent : Colors.black87,
-                ),
+            const Spacer(),
+            Text(
+              count,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: textColor,
+                fontFamily: 'Inter',
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: subtitleColor,
+                fontFamily: 'Inter',
               ),
             ),
           ],
