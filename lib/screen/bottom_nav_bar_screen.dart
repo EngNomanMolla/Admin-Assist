@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controller/home_controller.dart';
 import 'home_screen.dart';
 import 'calculator_screen.dart';
+import 'profile_screen.dart';
 
 class BottomNavBarScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
@@ -11,30 +12,38 @@ class BottomNavBarScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Admin",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Inter',
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: GetBuilder<HomeController>(
+          builder: (homeCtrl) {
+            if (homeCtrl.selectedIndex != 0) return const SizedBox.shrink();
+            return AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              title: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Admin",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                  Text(
+                    "Welcome back",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                      fontFamily: 'Inter',
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Text(
-              "Welcome back",
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-                fontFamily: 'Inter',
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
       body: GetBuilder<HomeController>(
@@ -52,9 +61,7 @@ class BottomNavBarScreen extends StatelessWidget {
                 ),
               );
             case 3:
-              return const Center(
-                child: Text("Profile", style: TextStyle(fontFamily: 'Inter')),
-              );
+              return ProfileScreen();
             default:
               return HomeContent();
           }

@@ -55,15 +55,6 @@ class HomeContent extends StatelessWidget {
                       fontFamily: 'Inter',
                     ),
                   ),
-                  Text(
-                    "See all",
-                    style: TextStyle(
-                      color: Colors.deepPurple,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -181,12 +172,16 @@ class HomeContent extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: isPrimary ? Colors.white.withOpacity(0.15) : tintColor.withOpacity(0.08),
+            width: 1.0,
+          ),
           boxShadow: [
             BoxShadow(
-              color: tintColor.withOpacity(isPrimary ? 0.35 : 0.06),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
+              color: tintColor.withOpacity(isPrimary ? 0.35 : 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
             ),
           ],
         ),

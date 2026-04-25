@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_widgets/provider/auth_provider.dart';
 import 'package:flutter_widgets/routes/app_routes.dart';
 import 'package:flutter_widgets/services/auth_service.dart';
+import 'package:flutter_widgets/models/admin_model.dart';
 
 class AuthController extends GetxController {
   final AuthProvider _authProvider = AuthProvider();
@@ -33,10 +34,13 @@ class AuthController extends GetxController {
       isLoading(true);
       final response = await _authProvider.login(email, password);
       
-      // Save token to service
-      final token = response['token'] ?? (response['data'] != null ? response['data']['token'] : null);
-      if (token != null) {
-        Get.find<AuthService>().setToken(token);
+      // Save data to service
+      final token = response['token'];
+      final adminData = response['admin'];
+      
+      if (token != null && adminData != null) {
+        final admin = Admin.fromJson(adminData);
+        Get.find<AuthService>().setUserData(token, admin);
       }
       
       Get.snackbar("Success", "Logged in successfully",

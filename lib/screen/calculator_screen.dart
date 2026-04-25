@@ -17,66 +17,69 @@ class CalculatorScreen extends StatelessWidget {
         children: [
           // Display Section
           Expanded(
-            flex: 3,
             child: Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
               alignment: Alignment.bottomRight,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Obx(() => Text(
-                        controller.userInput.value,
-                        style: const TextStyle(
-                          fontSize: 28,
-                          color: Colors.black54,
-                          fontFamily: 'Inter',
-                        ),
-                      )),
-                  const SizedBox(height: 10),
-                  Obx(() => Text(
-                        controller.result.value,
-                        style: const TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                          fontFamily: 'Inter',
-                        ),
-                      )),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: Obx(() => Text(
+                          controller.userInput.value,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            color: Colors.black54,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )),
+                  ),
+                  const SizedBox(height: 8),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: Obx(() => Text(
+                          controller.result.value,
+                          style: const TextStyle(
+                            fontSize: 50,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                            fontFamily: 'Inter',
+                            letterSpacing: -1.5,
+                          ),
+                        )),
+                  ),
                 ],
               ),
             ),
           ),
           
           // Buttons Section
-          Expanded(
-            flex: 7,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 20,
-                    offset: Offset(0, -5),
-                  ),
-                ],
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 30),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildButtonRow(['AC', 'C', '%', '÷'], [Colors.redAccent, Colors.orangeAccent, const Color(0xFF7B61FF), const Color(0xFF7B61FF)]),
-                  _buildButtonRow(['7', '8', '9', 'x'], [Colors.black87, Colors.black87, Colors.black87, const Color(0xFF7B61FF)]),
-                  _buildButtonRow(['4', '5', '6', '-'], [Colors.black87, Colors.black87, Colors.black87, const Color(0xFF7B61FF)]),
-                  _buildButtonRow(['1', '2', '3', '+'], [Colors.black87, Colors.black87, Colors.black87, const Color(0xFF7B61FF)]),
-                  _buildButtonRow(['0', '.', '=', ''], [Colors.black87, Colors.black87, Colors.green, Colors.transparent]),
-                ],
-              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildButtonRow(['AC', 'C', '%', '÷'], [Colors.redAccent, Colors.orangeAccent, const Color(0xFF7B61FF), const Color(0xFF7B61FF)]),
+                const SizedBox(height: 12),
+                _buildButtonRow(['7', '8', '9', 'x'], [Colors.black87, Colors.black87, Colors.black87, const Color(0xFF7B61FF)]),
+                const SizedBox(height: 12),
+                _buildButtonRow(['4', '5', '6', '-'], [Colors.black87, Colors.black87, Colors.black87, const Color(0xFF7B61FF)]),
+                const SizedBox(height: 12),
+                _buildButtonRow(['1', '2', '3', '+'], [Colors.black87, Colors.black87, Colors.black87, const Color(0xFF7B61FF)]),
+                const SizedBox(height: 12),
+                _buildButtonRow(['00', '0', '.', '='], [Colors.black87, Colors.black87, Colors.black87, Colors.green]),
+              ],
             ),
           ),
         ],
@@ -116,14 +119,6 @@ class CalculatorScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: bgColor,
           shape: BoxShape.circle,
-          boxShadow: [
-            if (!isOperator && !isClear && text != '=')
-              BoxShadow(
-                color: Colors.grey.shade200,
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-          ],
         ),
         child: Center(
           child: Text(
