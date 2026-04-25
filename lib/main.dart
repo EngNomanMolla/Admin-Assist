@@ -4,9 +4,9 @@ import 'package:flutter_widgets/routes/app_routes.dart';
 import 'package:get/get.dart';
 import 'package:flutter_widgets/services/auth_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.put(AuthService());
+  await Get.putAsync(() => AuthService().init());
   runApp(const MyApp());
 }
 
@@ -15,9 +15,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Get.find<AuthService>();
+    
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: AppPages.INITIAL,
+      initialRoute: authService.token != null ? AppRoutes.BOTTOM_NAV : AppPages.INITIAL,
       getPages: AppPages.routes,
     );
   }

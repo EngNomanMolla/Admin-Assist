@@ -29,7 +29,7 @@ class LiveNoticeScreen extends StatelessWidget {
               padding: const EdgeInsets.only(top: 50, bottom: 20, left: 16, right: 16),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)], // Vibrant purple to deep blue
+                  colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)], // Original LiveNotice colors
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -39,9 +39,9 @@ class LiveNoticeScreen extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0x334A00E0), // Reduced shadow opacity
-                    blurRadius: 10, // Reduced blur
-                    offset: Offset(0, 4), // Reduced offset
+                    color: Color(0x334A00E0),
+                    blurRadius: 15,
+                    offset: Offset(0, 8),
                   ),
                 ],
               ),
@@ -127,18 +127,22 @@ class LiveNoticeScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          controller.openAddNotice();
-          Get.bottomSheet(
-            const AddLiveNoticeScreen(),
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-          );
-        },
-        backgroundColor: const Color(0xFF7B61FF), // Theme color
-        elevation: 4,
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+      floatingActionButton: SizedBox(
+        width: 45,
+        height: 45,
+        child: FloatingActionButton(
+          onPressed: () {
+            controller.openAddNotice();
+            Get.bottomSheet(
+              const AddLiveNoticeScreen(),
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+            );
+          },
+          backgroundColor: const Color(0xFF6A11CB), // Matched with BannerAdsScreen
+          elevation: 4,
+          child: const Icon(Icons.add_rounded, color: Colors.white, size: 24),
+        ),
       ),
     );
   }

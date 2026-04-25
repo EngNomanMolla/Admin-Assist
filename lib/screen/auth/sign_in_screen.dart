@@ -72,21 +72,39 @@ class SignInScreen extends StatelessWidget {
                     isPassword: true,
                     textController: controller.passwordController,
                   ),
-                  const SizedBox(height: 12),
-                  
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        "Forgot Password?",
-                        style: TextStyle(
-                          color: Color(0xFF7B61FF),
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Inter',
+                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Obx(() => Checkbox(
+                                value: controller.isRememberMe.value,
+                                onChanged: (val) => controller.toggleRememberMe(),
+                                activeColor: const Color(0xFF7B61FF),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                              )),
+                          const Text(
+                            "Remember Me",
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.black87,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                            color: Color(0xFF7B61FF),
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Inter',
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 24),
                   

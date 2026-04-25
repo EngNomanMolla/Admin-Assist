@@ -6,7 +6,7 @@ import 'package:flutter_widgets/screen/career_updates/career_updates_screen.dart
 import 'package:flutter_widgets/screen/live_notice_screen.dart/live_notice_screen.dart';
 import 'package:flutter_widgets/screen/mentor_post_screen/mentor_post_screen.dart';
 import 'package:flutter_widgets/screen/product_screen/product_screen.dart';
-import 'package:flutter_widgets/screen/user_management/user_management_screen.dart';
+import 'package:flutter_widgets/screen/user_management/user_list_screen.dart';
 import 'package:flutter_widgets/screen/auth/sign_in_screen.dart';
 import 'package:flutter_widgets/screen/auth/sign_up_screen.dart';
 
@@ -44,7 +44,7 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.USERS,
-      page: () => UserManagementScreen(),
+      page: () => UserListScreen(),
     ),
     GetPage(
       name: AppRoutes.MENTOR_POSTS,

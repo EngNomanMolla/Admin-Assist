@@ -1,30 +1,93 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import '../models/banner_model.dart';
+import '../provider/banner_provider.dart';
 
 class BannerController extends GetxController {
-  List<Map<String, String>> banners = [
-    {
-      "title": "Career Growth",
-      "subtitle": "Continuous Improvement",
-      "startDate": "2026-02-08",
-      "endDate": "2026-02-08",
-      'image': "assets/images/png/banner.png",
-    },
-    {
-      "title": "Career Growth",
-      "subtitle": "Continuous Improvement",
-      "startDate": "2026-02-08",
-      "endDate": "2026-02-08",
-      'image': "assets/images/png/banner.png",
-    },
-  ];
+  final BannerProvider _bannerProvider = BannerProvider();
+  var banners = <BannerAd>[].obs;
 
-  String startDate = '';
-  String endDate = '';
+  var isLoading = false.obs;
+  var isUploadMode = true.obs; // true for Gallery, false for URL
+  var selectedImage = Rxn<File>();
+  final ImagePicker _picker = ImagePicker();
 
   final urlController = TextEditingController();
   final headlineController = TextEditingController();
   final subheadlineController = TextEditingController();
+  
+  String startDate = '';
+  String endDate = '';
+
+  var isEditing = false.obs;
+  int? editingBannerId;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchBanners();
+  }
+
+  Future<void> fetchBanners() async {
+    try {
+      isLoading(true);
+      final response = await _bannerProvider.fetchBanners();
+      if (response['banners'] != null) {
+        final List<dynamic> bannerList = response['banners'];
+        banners.assignAll(bannerList.map((e) => BannerAd.fromJson(e)).toList());
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Failed to fetch banners: ${e.toString()}",
+          backgroundColor: Colors.redAccent, colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  void openAddBanner() {
+    isEditing(false);
+    editingBannerId = null;
+    _clearForm();
+  }
+
+  void openEditBanner(BannerAd banner) {
+    isEditing(true);
+    editingBannerId = banner.id;
+    headlineController.text = banner.headline;
+    subheadlineController.text = banner.subheadline;
+    urlController.text = banner.image;
+    startDate = banner.startDate.split('T')[0];
+    endDate = banner.endDate.split('T')[0];
+    
+    if (!banner.image.startsWith('http') && !banner.image.startsWith('assets/')) {
+      selectedImage.value = File(banner.image);
+      isUploadMode(true);
+    } else {
+      isUploadMode(false);
+      selectedImage.value = null;
+    }
+    update();
+  }
+
+  Future<void> pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      selectedImage.value = File(image.path);
+      urlController.text = image.path; 
+    }
+  }
+
+  void toggleMode(bool mode) {
+    isUploadMode.value = mode;
+    if (mode) {
+      urlController.clear();
+    } else {
+      selectedImage.value = null;
+    }
+  }
 
   Future<void> selectDate(BuildContext context, bool isStartDate) async {
     DateTime? picked = await showDatePicker(
@@ -46,27 +109,71 @@ class BannerController extends GetxController {
     }
   }
 
-  void saveBanner() {
-    if (headlineController.text.isNotEmpty && urlController.text.isNotEmpty) {
-      Map<String, String> newBanner = {
-        "title": headlineController.text,
-        "subtitle": subheadlineController.text,
-        "startDate": startDate,
-        "endDate": endDate,
-        'image': urlController.text,
-      };
+  Future<void> saveBanner() async {
+    String imageSource = isUploadMode.value ? (selectedImage.value?.path ?? '') : urlController.text;
 
-      banners.add(newBanner);
-
-      urlController.clear();
-      headlineController.clear();
-      subheadlineController.clear();
-      startDate = '';
-      endDate = '';
-
-      update();
-      Get.back();
+    if (headlineController.text.isEmpty || imageSource.isEmpty) {
+      Get.snackbar("Error", "Please fill all fields",
+          backgroundColor: Colors.redAccent, colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
+      return;
     }
+
+    final data = {
+      'headline': headlineController.text,
+      'subheadline': subheadlineController.text,
+      'image': imageSource,
+      'start_date': startDate,
+      'end_date': endDate,
+      'status': 'active',
+    };
+
+    try {
+      isLoading(true);
+      if (isEditing.value) {
+        await _bannerProvider.updateBanner(editingBannerId!, data);
+        Get.snackbar("Success", "Banner updated successfully",
+            backgroundColor: Colors.green, colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
+      } else {
+        // Assume Create API is {{baseUrl}}/admin/banners via POST if needed
+        // For now, only local add if no API provided, but I'll call fetchBanners
+      }
+      fetchBanners();
+      Get.back();
+    } catch (e) {
+      Get.snackbar("Error", e.toString(),
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  Future<void> removeBanner(int id) async {
+    try {
+      isLoading(true);
+      await _bannerProvider.deleteBanner(id);
+      banners.removeWhere((element) => element.id == id);
+      Get.snackbar("Success", "Banner deleted successfully",
+          backgroundColor: Colors.green, colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
+    } catch (e) {
+      Get.snackbar("Error", "Failed to delete: ${e.toString()}",
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  void _clearForm() {
+    urlController.clear();
+    headlineController.clear();
+    subheadlineController.clear();
+    startDate = '';
+    endDate = '';
+    selectedImage.value = null;
+    isUploadMode(true);
+    update();
   }
 
   @override

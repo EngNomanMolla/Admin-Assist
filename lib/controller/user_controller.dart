@@ -1,60 +1,55 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-class User {
-  final String name;
-  final String email;
-  final String phone;
-  final String joinedDate;
-  final String imageUrl;
-
-  User({
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.joinedDate,
-    required this.imageUrl,
-  });
-}
+import '../models/user_model.dart';
+import '../provider/user_provider.dart';
 
 class UserController extends GetxController {
-  List<User> users = [];
+  final UserProvider _userProvider = UserProvider();
+  var users = <User>[].obs;
+  var isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    loadUsers();
+    fetchUsers();
   }
 
-  void loadUsers() {
-    var data = List.generate(
-      8,
-      (index) => User(
-        name: "Rahul Ahamed",
-        email: "rahul@example.com",
-        phone: "+880 1723-456789",
-        joinedDate: "2026-01-15",
-        imageUrl: "assets/images/png/rahuls.png",
-      ),
-    );
-
-    users = data;
-    update();
+  Future<void> fetchUsers() async {
+    try {
+      isLoading(true);
+      final response = await _userProvider.fetchActiveUsers();
+      users.assignAll(response.map((e) => User.fromJson(e)).toList());
+    } catch (e) {
+      Get.snackbar("Error", "Failed to fetch users: ${e.toString()}",
+          backgroundColor: Colors.redAccent, colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
+    } finally {
+      isLoading(false);
+    }
   }
 
   void updateUserInfo(int index, String newName, String newPhone) {
-    users[index] = User(
-      name: newName,
-      email: users[index].email,
-      phone: newPhone,
-      joinedDate: users[index].joinedDate,
-      imageUrl: users[index].imageUrl,
-    );
+    // This will need API implementation later, for now just local update if needed
     update();
   }
 
-  void deleteUser(int index) {
-    users.removeAt(index);
-    update();
-    Get.back();
+  Future<void> deleteUser(int id) async {
+    try {
+      isLoading(true);
+      await _userProvider.deleteUser(id);
+      
+      users.removeWhere((u) => u.id == id);
+      
+      Get.back(); // Close the details screen first
+      
+      Get.snackbar("Success", "User deleted successfully",
+          backgroundColor: Colors.green, colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
+    } catch (e) {
+      Get.snackbar("Error", "Failed to delete user: ${e.toString()}",
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
+    } finally {
+      isLoading(false);
+    }
   }
 }

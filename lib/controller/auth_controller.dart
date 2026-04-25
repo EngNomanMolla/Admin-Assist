@@ -18,6 +18,11 @@ class AuthController extends GetxController {
   final signUpPasswordController = TextEditingController(text: "12345678");
 
   var isLoading = false.obs;
+  var isRememberMe = false.obs;
+
+  void toggleRememberMe() {
+    isRememberMe.value = !isRememberMe.value;
+  }
 
   Future<void> login() async {
     final email = emailController.text.trim();
@@ -40,7 +45,7 @@ class AuthController extends GetxController {
       
       if (token != null && adminData != null) {
         final admin = Admin.fromJson(adminData);
-        Get.find<AuthService>().setUserData(token, admin);
+        Get.find<AuthService>().setUserData(token, admin, isRememberMe.value);
       }
       
       Get.snackbar("Success", "Logged in successfully",

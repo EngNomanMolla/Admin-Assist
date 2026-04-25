@@ -54,13 +54,6 @@ class BottomNavBarScreen extends StatelessWidget {
             case 1:
               return CalculatorScreen();
             case 2:
-              return const Center(
-                child: Text(
-                  "Notifications",
-                  style: TextStyle(fontFamily: 'Inter'),
-                ),
-              );
-            case 3:
               return ProfileScreen();
             default:
               return HomeContent();
@@ -108,11 +101,6 @@ class BottomNavBarScreen extends StatelessWidget {
                   icon: Icon(Icons.calculate_outlined, color: Colors.grey),
                   selectedIcon: Icon(Icons.calculate_rounded, color: Colors.deepPurple),
                   label: 'Calculator',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.notifications_outlined, color: Colors.grey),
-                  selectedIcon: Icon(Icons.notifications_rounded, color: Colors.deepPurple),
-                  label: 'Notification',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.person_outline_rounded, color: Colors.grey),

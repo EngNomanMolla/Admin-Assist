@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widgets/controller/user_controller.dart';
+import 'package:flutter_widgets/models/user_model.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 class UserDetailsScreen extends StatelessWidget {
   final int userIndex;
-  UserDetailsScreen({required this.userIndex});
+  UserDetailsScreen({super.key, required this.userIndex});
 
   final UserController controller = Get.find<UserController>();
 
@@ -12,15 +15,6 @@ class UserDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF7B39FD),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Get.back(),
-        ),
-      ),
-
       body: GetBuilder<UserController>(
         builder: (controller) {
           final user = controller.users[userIndex];
@@ -28,18 +22,49 @@ class UserDetailsScreen extends StatelessWidget {
           return SingleChildScrollView(
             child: Column(
               children: [
+                // Custom Vibrant Header
                 Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.only(bottom: 40),
-                  decoration: const BoxDecoration(color: Color(0xFF7B39FD)),
+                  padding: const EdgeInsets.only(top: 50, bottom: 40, left: 16, right: 16),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
+                    ),
+                  ),
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 55,
-                        backgroundColor: Colors.white24,
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                              onPressed: () => Get.back(),
+                            ),
+                          ),
+                          const Spacer(),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Hero(
+                        tag: 'user_avatar_$userIndex',
                         child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: AssetImage(user.imageUrl),
+                          radius: 55,
+                          backgroundColor: Colors.white24,
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: NetworkImage(
+                              "https://ui-avatars.com/api/?name=${user.name.replaceAll(' ', '+')}&background=random&color=fff",
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 15),
@@ -49,6 +74,16 @@ class UserDetailsScreen extends StatelessWidget {
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "ID: #${user.id}",
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 14,
+                          fontFamily: 'Inter',
                         ),
                       ),
                     ],
@@ -106,7 +141,7 @@ class UserDetailsScreen extends StatelessWidget {
                         _buildInfoRow(
                           Icons.calendar_today_outlined,
                           "Joined Date",
-                          user.joinedDate,
+                          DateFormat('dd MMM yyyy').format(DateTime.parse(user.createdAt)),
                           const Color(0xFFDCFCE7),
                           Colors.green,
                         ),
@@ -123,7 +158,18 @@ class UserDetailsScreen extends StatelessWidget {
                     width: double.infinity,
                     height: 60,
                     child: ElevatedButton.icon(
-                      onPressed: () => controller.deleteUser(userIndex),
+                      onPressed: () {
+                        AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.warning,
+                          animType: AnimType.bottomSlide,
+                          title: 'Confirm Delete',
+                          desc: 'Are you sure you want to delete this user permanently?',
+                          btnCancelOnPress: () {},
+                          btnOkOnPress: () => controller.deleteUser(user.id),
+                          btnOkColor: Colors.redAccent,
+                        ).show();
+                      },
                       icon: const Icon(
                         Icons.delete_outline,
                         color: Colors.redAccent,
@@ -134,6 +180,7 @@ class UserDetailsScreen extends StatelessWidget {
                           color: Colors.redAccent,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          fontFamily: 'Inter',
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -173,23 +220,26 @@ class UserDetailsScreen extends StatelessWidget {
           child: Icon(icon, color: iconColor, size: 24),
         ),
         const SizedBox(width: 20),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontFamily: 'Inter'),
               ),
-            ),
-          ],
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                  fontFamily: 'Inter',
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
