@@ -92,32 +92,70 @@ class AddPostDialog extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(color: Colors.grey.shade200, width: 1.5),
                             ),
-                            child: ctrl.pickedImage != null
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(18),
-                                    child: Image.file(
-                                      File(ctrl.pickedImage!.path),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFFF3EFFF),
+                            child: Stack(
+                              children: [
+                                // Image Content
+                                ctrl.pickedImage != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(18),
+                                        child: Image.file(
+                                          File(ctrl.pickedImage!.path),
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : ctrl.isEditing.value && ctrl.existingImageUrl != null && ctrl.existingImageUrl!.isNotEmpty && ctrl.selectedPostType == 'Image'
+                                        ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(18),
+                                            child: Image.network(
+                                              ctrl.existingImageUrl!,
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.broken_image)),
+                                            ),
+                                          )
+                                        : Center(
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  padding: const EdgeInsets.all(12),
+                                                  decoration: const BoxDecoration(
+                                                    color: Color(0xFFF3EFFF),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: const Icon(Icons.cloud_upload_rounded, color: Color(0xFF6A11CB), size: 28),
+                                                ),
+                                                const SizedBox(height: 12),
+                                                Text(
+                                                  "Tap to upload image",
+                                                  style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontWeight: FontWeight.w600),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                // Remove Button
+                                if (ctrl.pickedImage != null || (ctrl.isEditing.value && ctrl.existingImageUrl != null && ctrl.existingImageUrl!.isNotEmpty))
+                                  Positioned(
+                                    top: 10,
+                                    right: 10,
+                                    child: GestureDetector(
+                                      onTap: () => ctrl.clearImage(),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(6),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.5),
                                           shape: BoxShape.circle,
                                         ),
-                                        child: const Icon(Icons.cloud_upload_rounded, color: Color(0xFF6A11CB), size: 28),
+                                        child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
                                       ),
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        "Tap to upload image",
-                                        style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontWeight: FontWeight.w600),
-                                      ),
-                                    ],
+                                    ),
                                   ),
+                              ],
+                            ),
                           ),
                         ),
                       ],

@@ -4,6 +4,7 @@ import 'package:flutter_widgets/controller/mentor_post_controller.dart';
 import 'package:flutter_widgets/screen/mentor_post_screen/add_post_screen.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class MentorPostScreen extends StatelessWidget {
@@ -278,7 +279,7 @@ class MentorPostScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: _YoutubeVideoPlayer(url: post.imageUrl),
+                child: _YoutubeVideoPlayer(url: post.imageUrl, postId: post.id),
               ),
             )
           else if (post.imageUrl.isNotEmpty)
@@ -351,7 +352,7 @@ class MentorPostScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            post.type.toLowerCase() == "image" ? Icons.image_rounded : Icons.text_fields_rounded,
+                            post.type.toLowerCase() == "image" ? Icons.image_rounded : (post.type.toLowerCase() == "video" ? Icons.videocam_rounded : Icons.text_fields_rounded),
                             size: 12,
                             color: const Color(0xFF6A11CB),
                           ),
@@ -434,7 +435,8 @@ class MentorPostScreen extends StatelessWidget {
 
 class _YoutubeVideoPlayer extends StatefulWidget {
   final String url;
-  const _YoutubeVideoPlayer({required this.url});
+  final int postId;
+  const _YoutubeVideoPlayer({required this.url, required this.postId});
 
   @override
   State<_YoutubeVideoPlayer> createState() => _YoutubeVideoPlayerState();
@@ -443,6 +445,7 @@ class _YoutubeVideoPlayer extends StatefulWidget {
 class _YoutubeVideoPlayerState extends State<_YoutubeVideoPlayer> {
   late YoutubePlayerController _controller;
   String? _videoId;
+  final controller = Get.find<MentorPostController>();
 
   @override
   void initState() {
@@ -459,11 +462,20 @@ class _YoutubeVideoPlayerState extends State<_YoutubeVideoPlayer> {
         forceHD: false,
         enableCaption: true,
       ),
-    );
+    )..addListener(_onStateChange);
+  }
+
+  void _onStateChange() {
+    if (_controller.value.isPlaying) {
+      // If this video starts playing, notify the controller to pause others
+      controller.onVideoStartedPlaying(widget.postId, _controller);
+    }
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_onStateChange);
+    controller.onVideoDisposed(widget.postId);
     _controller.dispose();
     super.dispose();
   }
@@ -478,13 +490,23 @@ class _YoutubeVideoPlayerState extends State<_YoutubeVideoPlayer> {
       );
     }
 
-    return YoutubePlayer(
-      controller: _controller,
-      showVideoProgressIndicator: true,
-      progressIndicatorColor: const Color(0xFF6A11CB),
-      progressColors: const ProgressBarColors(
-        playedColor: Color(0xFF6A11CB),
-        handleColor: Color(0xFF2575FC),
+    return VisibilityDetector(
+      key: Key('video_${widget.postId}'),
+      onVisibilityChanged: (info) {
+        if (info.visibleFraction < 0.5) {
+          if (_controller.value.isPlaying) {
+            _controller.pause();
+          }
+        }
+      },
+      child: YoutubePlayer(
+        controller: _controller,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: const Color(0xFF6A11CB),
+        progressColors: const ProgressBarColors(
+          playedColor: Color(0xFF6A11CB),
+          handleColor: Color(0xFF2575FC),
+        ),
       ),
     );
   }

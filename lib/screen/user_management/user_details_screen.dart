@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_widgets/controller/user_controller.dart';
-import 'package:flutter_widgets/models/user_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserDetailsScreen extends StatelessWidget {
   final int userIndex;
@@ -130,6 +131,49 @@ class UserDetailsScreen extends StatelessWidget {
                           user.phone,
                           const Color(0xFFE0F2FE),
                           Colors.blue,
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Clipboard.setData(ClipboardData(text: user.phone));
+                                  Get.snackbar(
+                                    "Copied", 
+                                    "Phone number copied to clipboard",
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.blue.withOpacity(0.8),
+                                    colorText: Colors.white,
+                                    margin: const EdgeInsets.all(16),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.copy_rounded, size: 18, color: Colors.blue),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              GestureDetector(
+                                onTap: () async {
+                                  final Uri launchUri = Uri(scheme: 'tel', path: user.phone);
+                                  if (await canLaunchUrl(launchUri)) {
+                                    await launchUrl(launchUri);
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.call_rounded, size: 18, color: Colors.green),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 15),
@@ -207,8 +251,9 @@ class UserDetailsScreen extends StatelessWidget {
     String title,
     String value,
     Color bgColor,
-    Color iconColor,
-  ) {
+    Color iconColor, {
+    Widget? trailing,
+  }) {
     return Row(
       children: [
         Container(
@@ -241,6 +286,7 @@ class UserDetailsScreen extends StatelessWidget {
             ],
           ),
         ),
+        if (trailing != null) trailing!,
       ],
     );
   }

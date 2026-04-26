@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
     final authService = Get.find<AuthService>();
     
     return GetMaterialApp(
+      title: 'Mentor Admin',
       debugShowCheckedModeBanner: false,
       initialRoute: authService.token != null ? AppRoutes.BOTTOM_NAV : AppPages.INITIAL,
       getPages: AppPages.routes,

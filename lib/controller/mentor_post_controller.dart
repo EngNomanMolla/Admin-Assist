@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:intl/intl.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class MentorPost {
   final int id;
@@ -65,6 +66,7 @@ class MentorPostController extends GetxController {
 
   var isEditing = false.obs;
   int? editingPostId;
+  String? existingImageUrl;
 
   @override
   void onInit() {
@@ -101,6 +103,7 @@ class MentorPostController extends GetxController {
 
   void clearImage() {
     pickedImage = null;
+    existingImageUrl = null;
     update();
   }
 
@@ -127,15 +130,21 @@ class MentorPostController extends GetxController {
 
       if (isEditing.value) {
         await _provider.updateMentorPost(editingPostId!, fields, pickedImage?.path);
-        Get.snackbar("Success", "Post updated successfully");
       } else {
         await _provider.createMentorPost(fields, pickedImage?.path);
-        Get.snackbar("Success", "Post created successfully");
       }
 
-      Get.back();
+      await fetchPosts();
+      Get.back(); // Close dialog first
       resetForm();
-      fetchPosts();
+      
+      Get.snackbar(
+        "Success", 
+        isEditing.value ? "Post updated successfully" : "Post created successfully",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.8),
+        colorText: Colors.white,
+      );
     } catch (e) {
       Get.snackbar("Error", e.toString().replaceAll("Exception:", ""));
     } finally {
@@ -192,13 +201,33 @@ class MentorPostController extends GetxController {
     titleController.text = post.title;
     contentController.text = post.content;
     selectedPostType = post.type.substring(0, 1).toUpperCase() + post.type.substring(1);
+    existingImageUrl = post.imageUrl;
     
     if (post.type.toLowerCase() == 'video') {
-      videoUrlController.text = post.imageUrl; // In model, file_url is mapped to imageUrl
+      videoUrlController.text = post.imageUrl;
     }
     
     update();
     Get.dialog(const AddPostDialog());
+  }
+
+  YoutubePlayerController? _activeVideoController;
+  int? _activeVideoId;
+
+  void onVideoStartedPlaying(int postId, YoutubePlayerController controller) {
+    if (_activeVideoId != null && _activeVideoId != postId) {
+      // Pause the previous video if it's different from the new one
+      _activeVideoController?.pause();
+    }
+    _activeVideoId = postId;
+    _activeVideoController = controller;
+  }
+
+  void onVideoDisposed(int postId) {
+    if (_activeVideoId == postId) {
+      _activeVideoId = null;
+      _activeVideoController = null;
+    }
   }
 
   @override
