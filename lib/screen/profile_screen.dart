@@ -107,19 +107,13 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 30),
 
                   // Action Buttons
-                  _buildActionButton(
+                  Obx(() => _buildActionButton(
                     Icons.logout_rounded, 
-                    "Logout Account", 
+                    controller.isLoading.value ? "Logging out..." : "Logout Account", 
                     Colors.orange, 
-                    () => controller.logout()
-                  ),
-                  const SizedBox(height: 12),
-                  _buildActionButton(
-                    Icons.delete_forever_rounded, 
-                    "Permanently Delete", 
-                    Colors.redAccent, 
-                    () => controller.confirmDelete(context)
-                  ),
+                    controller.isLoading.value ? null : () => controller.logout(),
+                    isLoading: controller.isLoading.value,
+                  )),
                 ],
               ),
             ),
@@ -210,7 +204,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(IconData icon, String label, Color color, VoidCallback onTap) {
+  Widget _buildActionButton(IconData icon, String label, Color color, VoidCallback? onTap, {bool isLoading = false}) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -225,7 +219,9 @@ class ProfileScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 18),
+            isLoading 
+              ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+              : Icon(icon, size: 18),
             const SizedBox(width: 10),
             Text(
               label,

@@ -9,15 +9,46 @@ import 'package:flutter_widgets/screen/live_notice_screen.dart/add_live_notice_s
 import 'package:flutter_widgets/screen/product_screen/add_product_screen.dart';
 import 'package:get/get.dart';
 
-class HomeController extends GetxController {
-  int selectedIndex = 0;
+import 'package:flutter_widgets/provider/dashboard_provider.dart';
+import 'package:flutter_widgets/services/auth_service.dart';
 
-  int liveNotices = 12;
-  int bannerAds = 5;
-  int products = 48;
-  int careerUpdates = 23;
-  int users = 1247;
+class HomeController extends GetxController {
+  final DashboardProvider _dashboardProvider = DashboardProvider();
+  
+  int selectedIndex = 0;
+  bool isLoading = false;
+
+  int liveNotices = 0;
+  int bannerAds = 0;
+  int products = 0;
+  int careerUpdates = 0;
+  int users = 0;
   int mentorPosts = 0;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchDashboardData();
+  }
+
+  Future<void> fetchDashboardData() async {
+    try {
+      isLoading = true;
+      update();
+      final data = await _dashboardProvider.fetchDashboardData();
+      liveNotices = data['live_notices'] ?? 0;
+      bannerAds = data['banner_ads'] ?? 0;
+      products = data['products'] ?? 0;
+      careerUpdates = data['career_updates'] ?? 0;
+      users = data['users'] ?? 0;
+      mentorPosts = data['mentor_posts'] ?? 0;
+    } catch (e) {
+      debugPrint("Dashboard Error: $e");
+    } finally {
+      isLoading = false;
+      update();
+    }
+  }
 
   void changePage(int index) {
     if (index >= 0 && index < 3) {

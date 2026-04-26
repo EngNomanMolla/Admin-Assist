@@ -136,8 +136,10 @@ class BannerController extends GetxController {
             backgroundColor: Colors.green, colorText: Colors.white,
             snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
       } else {
-        // Assume Create API is {{baseUrl}}/admin/banners via POST if needed
-        // For now, only local add if no API provided, but I'll call fetchBanners
+        await _bannerProvider.createBanner(data);
+        Get.snackbar("Success", "Banner created successfully",
+            backgroundColor: Colors.green, colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
       }
       fetchBanners();
       Get.back();

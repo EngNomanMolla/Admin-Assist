@@ -1,3 +1,4 @@
+import 'package:flutter_widgets/screen/career_updates/career_details_screen.dart';
 import 'package:get/get.dart';
 import 'package:flutter_widgets/routes/app_routes.dart';
 import 'package:flutter_widgets/screen/bottom_nav_bar_screen.dart';
@@ -41,6 +42,10 @@ class AppPages {
     GetPage(
       name: AppRoutes.CAREER_UPDATES,
       page: () => const CareerUpdatesScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.CAREER_DETAILS,
+      page: () => CareerDetailsScreen(circularId: Get.arguments),
     ),
     GetPage(
       name: AppRoutes.USERS,

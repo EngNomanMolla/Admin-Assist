@@ -10,4 +10,5 @@ abstract class AppRoutes {
   static const String CAREER_UPDATES = '/career_updates';
   static const String USERS = '/users';
   static const String MENTOR_POSTS = '/mentor_posts';
+  static const String CAREER_DETAILS = '/career_details';
 }

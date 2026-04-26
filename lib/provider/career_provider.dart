@@ -75,4 +75,22 @@ class CareerProvider {
       throw Exception("Failed to update job circular");
     }
   }
+
+  Future<Map<String, dynamic>> fetchJobCircularDetails(int id) async {
+    final token = Get.find<AuthService>().token;
+    
+    final response = await http.get(
+      Uri.parse("$baseUrl/admin/job_circulars/$id"),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception("Failed to load job circular details");
+    }
+  }
 }

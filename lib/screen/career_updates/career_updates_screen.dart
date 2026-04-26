@@ -1,7 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_widgets/models/job_circular_model.dart';
+import 'package:flutter_widgets/routes/app_routes.dart';
 import 'package:flutter_widgets/screen/career_updates/add_Job_circular_screen.dart';
+import 'package:flutter_widgets/screen/career_updates/career_details_screen.dart';
 import 'package:get/get.dart';
 import 'package:flutter_widgets/controller/career_controller.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -219,137 +221,140 @@ class CareerUpdatesScreen extends StatelessWidget {
     ];
     final accentColor = colors[index % colors.length];
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: accentColor.withOpacity(0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: accentColor.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      onTap: () => Get.toNamed(AppRoutes.CAREER_DETAILS, arguments: item.id),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: accentColor.withOpacity(0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: accentColor.withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(Icons.business_rounded, color: accentColor, size: 20),
                             ),
-                            child: Icon(Icons.business_rounded, color: accentColor, size: 20),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.organizationName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 15,
+                                      fontFamily: 'Inter',
+                                      color: Colors.black87,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    item.postTitle,
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Inter',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_horiz_rounded, color: Colors.grey, size: 20),
+                        padding: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        onSelected: (val) {
+                          if (val == 'edit') {
+                            controller.openEditMode(item);
+                            Get.to(() => const AddJobCircularScreen());
+                          } else if (val == 'delete') {
+                            AwesomeDialog(
+                              context: context,
+                              dialogType: DialogType.warning,
+                              title: 'Delete Circular',
+                              desc: 'Are you sure you want to remove this job posting?',
+                              btnCancelOnPress: () {},
+                              btnOkOnPress: () => controller.deleteCircular(item.id),
+                              btnOkColor: Colors.redAccent,
+                            ).show();
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
                               children: [
-                                Text(
-                                  item.organizationName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 15,
-                                    fontFamily: 'Inter',
-                                    color: Colors.black87,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  item.postTitle,
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Inter',
-                                  ),
-                                ),
+                                Icon(Icons.edit_rounded, size: 16, color: Colors.blue),
+                                SizedBox(width: 8),
+                                Text("Edit", style: TextStyle(fontSize: 13, fontFamily: 'Inter')),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete_outline_rounded, size: 16, color: Colors.red),
+                                SizedBox(width: 8),
+                                Text("Delete", style: TextStyle(fontSize: 13, fontFamily: 'Inter')),
                               ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_horiz_rounded, color: Colors.grey, size: 20),
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      onSelected: (val) {
-                        if (val == 'edit') {
-                          controller.openEditMode(item);
-                          Get.to(() => const AddJobCircularScreen());
-                        } else if (val == 'delete') {
-                          AwesomeDialog(
-                            context: context,
-                            dialogType: DialogType.warning,
-                            title: 'Delete Circular',
-                            desc: 'Are you sure you want to remove this job posting?',
-                            btnCancelOnPress: () {},
-                            btnOkOnPress: () => controller.deleteCircular(item.id),
-                            btnOkColor: Colors.redAccent,
-                          ).show();
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit_rounded, size: 16, color: Colors.blue),
-                              SizedBox(width: 8),
-                              Text("Edit", style: TextStyle(fontSize: 13, fontFamily: 'Inter')),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete_outline_rounded, size: 16, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text("Delete", style: TextStyle(fontSize: 13, fontFamily: 'Inter')),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _buildBadge(
-                      Icons.people_alt_rounded,
-                      "${item.vacancy} Vacancies",
-                      Colors.blue,
-                    ),
-                    _buildBadge(
-                      Icons.timer_outlined,
-                      "Deadline: ${DateFormat('dd MMM yy').format(DateTime.parse(item.deadline))}",
-                      Colors.orange.shade700,
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _buildBadge(
+                        Icons.people_alt_rounded,
+                        "${item.vacancy} Vacancies",
+                        Colors.blue,
+                      ),
+                      _buildBadge(
+                        Icons.timer_outlined,
+                        "Deadline: ${DateFormat('dd MMM yy').format(DateTime.parse(item.deadline))}",
+                        Colors.orange.shade700,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

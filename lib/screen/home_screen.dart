@@ -3,13 +3,19 @@ import 'package:flutter_widgets/controller/home_controller.dart';
 import 'package:flutter_widgets/routes/app_routes.dart';
 import 'package:get/get.dart';
 
+import 'package:shimmer/shimmer.dart';
+
 class HomeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<HomeController>(
       builder: (controller) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        return RefreshIndicator(
+          onRefresh: controller.fetchDashboardData,
+          color: const Color(0xFF4A00E0),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -59,65 +65,94 @@ class HomeContent extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 1.15,
-                children: [
-                  _buildCard(
-                    "${controller.liveNotices}",
-                    "Live Notices",
-                    Icons.notifications_active_rounded,
-                    Colors.deepPurpleAccent,
-                    true,
-                    onTap: () => Get.toNamed(AppRoutes.LIVE_NOTICE),
-                  ),
-                  _buildCard(
-                    "${controller.bannerAds}",
-                    "Banner Ads",
-                    Icons.branding_watermark_rounded,
-                    Colors.blue,
-                    false,
-                    onTap: () => Get.toNamed(AppRoutes.BANNER_ADS),
-                  ),
-                  _buildCard(
-                    "${controller.products}",
-                    "Products",
-                    Icons.inventory_2_rounded,
-                    Colors.pink,
-                    false,
-                    onTap: () => Get.toNamed(AppRoutes.PRODUCTS),
-                  ),
-                  _buildCard(
-                    "${controller.careerUpdates}",
-                    "Career Updates",
-                    Icons.work_history_rounded,
-                    Colors.teal,
-                    false,
-                    onTap: () => Get.toNamed(AppRoutes.CAREER_UPDATES),
-                  ),
-                  _buildCard(
-                    "${controller.users}",
-                    "Users",
-                    Icons.group_rounded,
-                    Colors.indigo,
-                    false,
-                    onTap: () => Get.toNamed(AppRoutes.USERS),
-                  ),
-                  _buildCard(
-                    "${controller.mentorPosts}",
-                    "Mentor Posts",
-                    Icons.post_add_rounded,
-                    Colors.amber.shade700,
-                    false,
-                    onTap: () => Get.toNamed(AppRoutes.MENTOR_POSTS),
-                  ),
-                ],
-              ),
+              if (controller.isLoading) 
+                _buildShimmerContent()
+              else
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.15,
+                  children: [
+                    _buildCard(
+                      "${controller.liveNotices}",
+                      "Live Notices",
+                      Icons.notifications_active_rounded,
+                      Colors.deepPurpleAccent,
+                      true,
+                      onTap: () => Get.toNamed(AppRoutes.LIVE_NOTICE),
+                    ),
+                    _buildCard(
+                      "${controller.bannerAds}",
+                      "Banner Ads",
+                      Icons.branding_watermark_rounded,
+                      Colors.blue,
+                      false,
+                      onTap: () => Get.toNamed(AppRoutes.BANNER_ADS),
+                    ),
+                    _buildCard(
+                      "${controller.products}",
+                      "Products",
+                      Icons.inventory_2_rounded,
+                      Colors.pink,
+                      false,
+                      onTap: () => Get.toNamed(AppRoutes.PRODUCTS),
+                    ),
+                    _buildCard(
+                      "${controller.careerUpdates}",
+                      "Career Updates",
+                      Icons.work_history_rounded,
+                      Colors.teal,
+                      false,
+                      onTap: () => Get.toNamed(AppRoutes.CAREER_UPDATES),
+                    ),
+                    _buildCard(
+                      "${controller.users}",
+                      "Users",
+                      Icons.group_rounded,
+                      Colors.indigo,
+                      false,
+                      onTap: () => Get.toNamed(AppRoutes.USERS),
+                    ),
+                    _buildCard(
+                      "${controller.mentorPosts}",
+                      "Mentor Posts",
+                      Icons.post_add_rounded,
+                      Colors.amber.shade700,
+                      false,
+                      onTap: () => Get.toNamed(AppRoutes.MENTOR_POSTS),
+                    ),
+                  ],
+                ),
             ],
+          ),
+        ));
+      },
+    );
+  }
+
+  Widget _buildShimmerContent() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 1.15,
+      ),
+      itemCount: 6,
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(22),
+            ),
           ),
         );
       },

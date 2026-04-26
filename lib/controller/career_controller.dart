@@ -8,8 +8,10 @@ class CareerController extends GetxController {
   
   var circulars = <JobCircular>[].obs;
   var isLoading = false.obs;
+  var isDetailLoading = false.obs;
   var isEditing = false.obs;
   var editingId = 0.obs;
+  var selectedCircular = Rxn<JobCircular>();
 
   final organizationNameController = TextEditingController();
   final postTitleController = TextEditingController();
@@ -49,6 +51,19 @@ class CareerController extends GetxController {
           snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
     } finally {
       isLoading(false);
+    }
+  }
+
+  Future<void> fetchDetails(int id) async {
+    try {
+      isDetailLoading(true);
+      final data = await _careerProvider.fetchJobCircularDetails(id);
+      selectedCircular.value = JobCircular.fromJson(data);
+    } catch (e) {
+      Get.snackbar("Error", "Failed to fetch details: ${e.toString()}",
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
+    } finally {
+      isDetailLoading(false);
     }
   }
 

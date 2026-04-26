@@ -24,6 +24,24 @@ class BannerProvider {
     }
   }
 
+  Future<void> createBanner(Map<String, dynamic> data) async {
+    final token = Get.find<AuthService>().token;
+    
+    final response = await http.post(
+      Uri.parse("$baseUrl/admin/banners"),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(data),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception("Failed to create banner");
+    }
+  }
+
   Future<void> updateBanner(int id, Map<String, dynamic> data) async {
     final token = Get.find<AuthService>().token;
     
