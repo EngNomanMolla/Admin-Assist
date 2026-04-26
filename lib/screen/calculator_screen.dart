@@ -52,6 +52,30 @@ class CalculatorScreen extends StatelessWidget {
                           ),
                         )),
                   ),
+                  const SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: () => controller.onButtonPressed('C'),
+                    onLongPress: () => controller.onButtonPressed('AC'),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.backspace_outlined,
+                        size: 20,
+                        color: Colors.orangeAccent,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

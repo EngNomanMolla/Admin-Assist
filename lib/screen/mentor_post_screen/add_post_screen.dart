@@ -28,15 +28,15 @@ class AddPostDialog extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Create Mentor Post",
-                    style: TextStyle(
+                  Obx(() => Text(
+                    controller.isEditing.value ? "Update Mentor Post" : "Create Mentor Post",
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF1F2937),
                       fontFamily: 'Inter',
                     ),
-                  ),
+                  )),
                   GestureDetector(
                     onTap: () => Get.back(),
                     child: Container(
@@ -66,6 +66,7 @@ class AddPostDialog extends StatelessWidget {
               GetBuilder<MentorPostController>(
                 builder: (ctrl) {
                   return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
@@ -77,7 +78,7 @@ class AddPostDialog extends StatelessWidget {
                         ],
                       ),
 
-                      if (ctrl.selectedPostType != 'Text') ...[
+                      if (ctrl.selectedPostType == 'Image') ...[
                         const SizedBox(height: 20),
                         _buildLabel("Attachment"),
                         const SizedBox(height: 8),
@@ -112,12 +113,23 @@ class AddPostDialog extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 12),
                                       Text(
-                                        "Tap to upload ${ctrl.selectedPostType.toLowerCase()}",
+                                        "Tap to upload image",
                                         style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontWeight: FontWeight.w600),
                                       ),
                                     ],
                                   ),
                           ),
+                        ),
+                      ],
+
+                      if (ctrl.selectedPostType == 'Video') ...[
+                        const SizedBox(height: 20),
+                        _buildLabel("Video Link"),
+                        const SizedBox(height: 8),
+                        _buildTextField(
+                          controller.videoUrlController,
+                          "Paste YouTube or Video URL...",
+                          icon: Icons.link_rounded,
                         ),
                       ],
                     ],
@@ -139,18 +151,29 @@ class AddPostDialog extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => controller.publishPost(),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: const Color(0xFF6A11CB),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        "Publish Now",
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
-                      ),
+                    child: GetBuilder<MentorPostController>(
+                      builder: (ctrl) {
+                        return ElevatedButton(
+                          onPressed: ctrl.isLoading ? null : () => ctrl.publishPost(),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            backgroundColor: const Color(0xFF6A11CB),
+                            disabledBackgroundColor: const Color(0xFF6A11CB).withOpacity(0.5),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            elevation: 0,
+                          ),
+                          child: ctrl.isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                )
+                              : Obx(() => Text(
+                                  ctrl.isEditing.value ? "Update Post" : "Publish Now",
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16),
+                                )),
+                        );
+                      },
                     ),
                   ),
                 ],

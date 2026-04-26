@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_widgets/provider/mentor_post_provider.dart';
+import 'package:flutter_widgets/screen/mentor_post_screen/add_post_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
@@ -57,9 +58,13 @@ class MentorPostController extends GetxController {
 
   final titleController = TextEditingController();
   final contentController = TextEditingController();
+  final videoUrlController = TextEditingController();
   String selectedPostType = 'Text';
   XFile? pickedImage;
   final ImagePicker _picker = ImagePicker();
+
+  var isEditing = false.obs;
+  int? editingPostId;
 
   @override
   void onInit() {
@@ -99,20 +104,54 @@ class MentorPostController extends GetxController {
     update();
   }
 
-  void publishPost() {
-    // API for publishing will be implemented if requested
-    if (titleController.text.isNotEmpty) {
-      Get.snackbar("Info", "Create Post API integration coming soon!");
+  Future<void> publishPost() async {
+    if (titleController.text.isEmpty || contentController.text.isEmpty) {
+      Get.snackbar("Error", "Please fill all required fields");
+      return;
+    }
+
+    try {
+      isLoading = true;
+      update();
+
+      final Map<String, String> fields = {
+        'title': titleController.text,
+        'type': selectedPostType.toLowerCase(),
+        'content': contentController.text,
+        'status': 'active',
+      };
+
+      if (selectedPostType.toLowerCase() == 'video') {
+        fields['file_url'] = videoUrlController.text;
+      }
+
+      if (isEditing.value) {
+        await _provider.updateMentorPost(editingPostId!, fields, pickedImage?.path);
+        Get.snackbar("Success", "Post updated successfully");
+      } else {
+        await _provider.createMentorPost(fields, pickedImage?.path);
+        Get.snackbar("Success", "Post created successfully");
+      }
+
       Get.back();
       resetForm();
+      fetchPosts();
+    } catch (e) {
+      Get.snackbar("Error", e.toString().replaceAll("Exception:", ""));
+    } finally {
+      isLoading = false;
+      update();
     }
   }
 
   void resetForm() {
     titleController.clear();
     contentController.clear();
+    videoUrlController.clear();
     selectedPostType = 'Text';
     pickedImage = null;
+    isEditing.value = false;
+    editingPostId = null;
     update();
   }
 
@@ -148,13 +187,25 @@ class MentorPostController extends GetxController {
   }
 
   void editPost(MentorPost post) {
-    // To be implemented
+    isEditing.value = true;
+    editingPostId = post.id;
+    titleController.text = post.title;
+    contentController.text = post.content;
+    selectedPostType = post.type.substring(0, 1).toUpperCase() + post.type.substring(1);
+    
+    if (post.type.toLowerCase() == 'video') {
+      videoUrlController.text = post.imageUrl; // In model, file_url is mapped to imageUrl
+    }
+    
+    update();
+    Get.dialog(const AddPostDialog());
   }
 
   @override
   void onClose() {
     titleController.dispose();
     contentController.dispose();
+    videoUrlController.dispose();
     super.onClose();
   }
 }

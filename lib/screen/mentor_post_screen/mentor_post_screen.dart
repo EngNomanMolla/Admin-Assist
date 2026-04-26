@@ -4,6 +4,7 @@ import 'package:flutter_widgets/controller/mentor_post_controller.dart';
 import 'package:flutter_widgets/screen/mentor_post_screen/add_post_screen.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class MentorPostScreen extends StatelessWidget {
   final MentorPostController controller = Get.put(MentorPostController());
@@ -271,8 +272,16 @@ class MentorPostScreen extends StatelessWidget {
             ),
           ),
 
-          // Post Content
-          if (post.imageUrl.isNotEmpty)
+          // Post Content (Image or Video)
+          if (post.type.toLowerCase() == 'video' && post.imageUrl.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: _YoutubeVideoPlayer(url: post.imageUrl),
+              ),
+            )
+          else if (post.imageUrl.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: ClipRRect(
@@ -418,6 +427,64 @@ class MentorPostScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _YoutubeVideoPlayer extends StatefulWidget {
+  final String url;
+  const _YoutubeVideoPlayer({required this.url});
+
+  @override
+  State<_YoutubeVideoPlayer> createState() => _YoutubeVideoPlayerState();
+}
+
+class _YoutubeVideoPlayerState extends State<_YoutubeVideoPlayer> {
+  late YoutubePlayerController _controller;
+  String? _videoId;
+
+  @override
+  void initState() {
+    super.initState();
+    _videoId = YoutubePlayer.convertUrlToId(widget.url);
+    _controller = YoutubePlayerController(
+      initialVideoId: _videoId ?? "",
+      flags: const YoutubePlayerFlags(
+        autoPlay: false,
+        mute: false,
+        disableDragSeek: false,
+        loop: false,
+        isLive: false,
+        forceHD: false,
+        enableCaption: true,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_videoId == null) {
+      return Container(
+        height: 150,
+        color: Colors.black12,
+        child: const Center(child: Text("Invalid YouTube URL")),
+      );
+    }
+
+    return YoutubePlayer(
+      controller: _controller,
+      showVideoProgressIndicator: true,
+      progressIndicatorColor: const Color(0xFF6A11CB),
+      progressColors: const ProgressBarColors(
+        playedColor: Color(0xFF6A11CB),
+        handleColor: Color(0xFF2575FC),
       ),
     );
   }
