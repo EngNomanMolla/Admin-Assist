@@ -211,15 +211,17 @@ class AddBannerScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       elevation: 0,
                     ),
-                    child: Obx(() => Text(
-                      controller.isEditing.value ? "Update Banner" : "Publish Banner",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontFamily: 'Inter',
-                      ),
-                    )),
+                    child: Obx(() => controller.isLoading.value
+                      ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                      : Text(
+                          controller.isEditing.value ? "Update Banner" : "Publish Banner",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontFamily: 'Inter',
+                          ),
+                        )),
                   ),
                 ),
                 const SizedBox(height: 10),

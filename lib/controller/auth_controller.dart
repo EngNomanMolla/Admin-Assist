@@ -9,13 +9,13 @@ class AuthController extends GetxController {
   final AuthProvider _authProvider = AuthProvider();
 
   // Sign In Controllers
-  final emailController = TextEditingController(text: "mollanoman2017@gmail.com");
-  final passwordController = TextEditingController(text: "12345678");
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   // Sign Up Controllers
-  final signUpNameController = TextEditingController(text: "Noman Molla");
-  final signUpEmailController = TextEditingController(text: "mollanoman2017@gmail.com");
-  final signUpPasswordController = TextEditingController(text: "12345678");
+  final signUpNameController = TextEditingController();
+  final signUpEmailController = TextEditingController();
+  final signUpPasswordController = TextEditingController();
 
   var isLoading = false.obs;
   var isRememberMe = false.obs;
@@ -48,9 +48,6 @@ class AuthController extends GetxController {
         Get.find<AuthService>().setUserData(token, admin, isRememberMe.value);
       }
       
-      Get.snackbar("Success", "Logged in successfully",
-          backgroundColor: Colors.green, colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
       Get.offAllNamed(AppRoutes.BOTTOM_NAV);
     } catch (e) {
       Get.snackbar("Login Failed", e.toString().replaceAll('Exception: ', ''),

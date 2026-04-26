@@ -81,48 +81,66 @@ class HomeContent extends StatelessWidget {
                       "Live Notices",
                       Icons.notifications_active_rounded,
                       Colors.deepPurpleAccent,
-                      true,
-                      onTap: () => Get.toNamed(AppRoutes.LIVE_NOTICE),
+                      controller.primaryCardIndex == 0,
+                      onTap: () {
+                        controller.setPrimaryCard(0);
+                        Get.toNamed(AppRoutes.LIVE_NOTICE);
+                      },
                     ),
                     _buildCard(
                       "${controller.bannerAds}",
                       "Banner Ads",
                       Icons.branding_watermark_rounded,
                       Colors.blue,
-                      false,
-                      onTap: () => Get.toNamed(AppRoutes.BANNER_ADS),
+                      controller.primaryCardIndex == 1,
+                      onTap: () {
+                        controller.setPrimaryCard(1);
+                        Get.toNamed(AppRoutes.BANNER_ADS);
+                      },
                     ),
                     _buildCard(
                       "${controller.products}",
                       "Products",
                       Icons.inventory_2_rounded,
                       Colors.pink,
-                      false,
-                      onTap: () => Get.toNamed(AppRoutes.PRODUCTS),
+                      controller.primaryCardIndex == 2,
+                      onTap: () {
+                        controller.setPrimaryCard(2);
+                        Get.toNamed(AppRoutes.PRODUCTS);
+                      },
                     ),
                     _buildCard(
                       "${controller.careerUpdates}",
                       "Career Updates",
                       Icons.work_history_rounded,
                       Colors.teal,
-                      false,
-                      onTap: () => Get.toNamed(AppRoutes.CAREER_UPDATES),
+                      controller.primaryCardIndex == 3,
+                      onTap: () {
+                        controller.setPrimaryCard(3);
+                        Get.toNamed(AppRoutes.CAREER_UPDATES);
+                      },
                     ),
                     _buildCard(
                       "${controller.users}",
                       "Users",
                       Icons.group_rounded,
                       Colors.indigo,
-                      false,
-                      onTap: () => Get.toNamed(AppRoutes.USERS),
+                      controller.primaryCardIndex == 4,
+                      onTap: () {
+                        controller.setPrimaryCard(4);
+                        Get.toNamed(AppRoutes.USERS);
+                      },
                     ),
                     _buildCard(
                       "${controller.mentorPosts}",
                       "Mentor Posts",
                       Icons.post_add_rounded,
                       Colors.amber.shade700,
-                      false,
-                      onTap: () => Get.toNamed(AppRoutes.MENTOR_POSTS),
+                      controller.primaryCardIndex == 5,
+                      onTap: () {
+                        controller.setPrimaryCard(5);
+                        Get.toNamed(AppRoutes.MENTOR_POSTS);
+                      },
                     ),
                   ],
                 ),

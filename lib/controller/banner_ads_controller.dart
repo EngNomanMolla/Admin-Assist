@@ -110,19 +110,18 @@ class BannerController extends GetxController {
   }
 
   Future<void> saveBanner() async {
-    String imageSource = isUploadMode.value ? (selectedImage.value?.path ?? '') : urlController.text;
+    String? imagePath = isUploadMode.value ? (selectedImage.value?.path) : urlController.text;
 
-    if (headlineController.text.isEmpty || imageSource.isEmpty) {
+    if (headlineController.text.isEmpty || (imagePath == null || imagePath.isEmpty)) {
       Get.snackbar("Error", "Please fill all fields",
           backgroundColor: Colors.redAccent, colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
       return;
     }
 
-    final data = {
+    final Map<String, String> data = {
       'headline': headlineController.text,
       'subheadline': subheadlineController.text,
-      'image': imageSource,
       'start_date': startDate,
       'end_date': endDate,
       'status': 'active',
@@ -131,21 +130,19 @@ class BannerController extends GetxController {
     try {
       isLoading(true);
       if (isEditing.value) {
-        await _bannerProvider.updateBanner(editingBannerId!, data);
-        Get.snackbar("Success", "Banner updated successfully",
-            backgroundColor: Colors.green, colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
+        await _bannerProvider.updateBanner(editingBannerId!, data, imagePath);
       } else {
-        await _bannerProvider.createBanner(data);
-        Get.snackbar("Success", "Banner created successfully",
-            backgroundColor: Colors.green, colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
+        await _bannerProvider.createBanner(data, imagePath);
       }
-      fetchBanners();
-      Get.back();
+      await fetchBanners();
+      Get.back(); // Close bottom sheet first
+      Get.snackbar("Success", isEditing.value ? "Banner updated successfully" : "Banner created successfully",
+          backgroundColor: Colors.green, colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
     } catch (e) {
-      Get.snackbar("Error", e.toString(),
-          backgroundColor: Colors.redAccent, colorText: Colors.white);
+      Get.snackbar("Error", e.toString().replaceAll("Exception:", ""),
+          backgroundColor: Colors.redAccent, colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM, margin: const EdgeInsets.all(16));
     } finally {
       isLoading(false);
     }

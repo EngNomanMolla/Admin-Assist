@@ -275,6 +275,18 @@ class BannerAdsScreen extends StatelessWidget {
         height: 150,
         width: double.infinity,
         fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 150,
+              width: double.infinity,
+              color: Colors.white,
+            ),
+          );
+        },
         errorBuilder: (context, error, stackTrace) => _imageErrorPlaceholder(),
       );
     } else if (imagePath.startsWith('assets/')) {

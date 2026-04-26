@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widgets/controller/banner_ads_controller.dart';
 import 'package:flutter_widgets/controller/career_controller.dart';
 import 'package:flutter_widgets/controller/live_notice_controller.dart';
+import 'package:flutter_widgets/controller/mentor_post_controller.dart';
 import 'package:flutter_widgets/controller/product/product_controller.dart';
 import 'package:flutter_widgets/screen/banner_Ads/add_banner_screen.dart';
 import 'package:flutter_widgets/screen/career_updates/add_Job_circular_screen.dart';
 import 'package:flutter_widgets/screen/live_notice_screen.dart/add_live_notice_screen.dart';
+import 'package:flutter_widgets/screen/mentor_post_screen/add_post_screen.dart';
 import 'package:flutter_widgets/screen/product_screen/add_product_screen.dart';
 import 'package:get/get.dart';
 
@@ -25,10 +27,17 @@ class HomeController extends GetxController {
   int users = 0;
   int mentorPosts = 0;
 
+  int primaryCardIndex = 0; // Tracks the last selected card
+
   @override
   void onInit() {
     super.onInit();
     fetchDashboardData();
+  }
+
+  void setPrimaryCard(int index) {
+    primaryCardIndex = index;
+    update();
   }
 
   Future<void> fetchDashboardData() async {
@@ -94,5 +103,13 @@ class HomeController extends GetxController {
     }
     Get.find<CareerController>().clearFields();
     Get.to(() => const AddJobCircularScreen());
+  }
+
+  void onAddMentorPost() {
+    if (!Get.isRegistered<MentorPostController>()) {
+      Get.put(MentorPostController());
+    }
+    Get.find<MentorPostController>().resetForm();
+    Get.dialog(const AddPostDialog());
   }
 }

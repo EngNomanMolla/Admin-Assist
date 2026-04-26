@@ -1,46 +1,84 @@
+import 'dart:io';
+import 'package:flutter_widgets/provider/mentor_post_provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:intl/intl.dart';
+
 class MentorPost {
+  final int id;
   final String title;
   final String date;
-  final String images;
-  final String tag;
+  final String imageUrl;
+  final String type;
+  final String content;
+  final String status;
 
   MentorPost({
+    required this.id,
     required this.title,
     required this.date,
-    required this.images,
-    required this.tag,
+    required this.imageUrl,
+    required this.type,
+    required this.content,
+    required this.status,
   });
+
+  factory MentorPost.fromJson(Map<String, dynamic> json) {
+    String formattedDate = "";
+    if (json['created_at'] != null) {
+      try {
+        DateTime dt = DateTime.parse(json['created_at'].toString());
+        formattedDate = DateFormat('dd MMM yy').format(dt);
+      } catch (e) {
+        formattedDate = json['created_at'].toString().split('T')[0];
+      }
+    }
+
+    return MentorPost(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? "",
+      date: formattedDate,
+      imageUrl: json['file_url'] ?? "",
+      type: json['type'] ?? "text",
+      content: json['content'] ?? "",
+      status: json['status'] ?? "active",
+    );
+  }
 }
 
 class MentorPostController extends GetxController {
+  final MentorPostProvider _provider = MentorPostProvider();
+  
   List<MentorPost> posts = [];
+  bool isLoading = false;
 
   final titleController = TextEditingController();
   final contentController = TextEditingController();
   String selectedPostType = 'Text';
-  String? uploadedImageName;
+  XFile? pickedImage;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void onInit() {
     super.onInit();
-    loadPosts();
+    fetchPosts();
   }
 
-  void loadPosts() {
-    var data = List.generate(
-      5,
-      (index) => MentorPost(
-        title: "Top 10 Study Tips for Final Exams",
-        date: "2026-02-10",
-        images: "assets/images/png/mentor5.png",
-        tag: index % 2 == 0 ? "Text" : "Image",
-      ),
-    );
-    posts = data;
-    update();
+  Future<void> fetchPosts() async {
+    try {
+      isLoading = true;
+      update();
+      final data = await _provider.fetchMentorPosts();
+      posts = data.map((e) => MentorPost.fromJson(e)).toList();
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+    } finally {
+      isLoading = false;
+      update();
+    }
   }
 
   void changePostType(String type) {
@@ -48,60 +86,69 @@ class MentorPostController extends GetxController {
     update();
   }
 
-  void pickImage() {
-    uploadedImageName = "mentor_image_01.png";
+  Future<void> pickPostImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      pickedImage = image;
+      update();
+    }
+  }
+
+  void clearImage() {
+    pickedImage = null;
     update();
   }
 
   void publishPost() {
+    // API for publishing will be implemented if requested
     if (titleController.text.isNotEmpty) {
-      final newPost = MentorPost(
-        title: titleController.text,
-        date: DateTime.now().toString().split(' ')[0],
-        images: "assets/images/png/mentor5.png",
-        tag: selectedPostType,
-      );
-
-      posts.insert(0, newPost);
-
-      titleController.clear();
-      contentController.clear();
-      selectedPostType = 'Text';
-      uploadedImageName = null;
-
-      update();
+      Get.snackbar("Info", "Create Post API integration coming soon!");
       Get.back();
-
-      Get.snackbar(
-        "Success",
-        "Post published successfully!",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
-    } else {
-      Get.snackbar(
-        "Error",
-        "Please enter a title",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      resetForm();
     }
   }
 
-  void deletePost(int index) {
-    posts.removeAt(index);
+  void resetForm() {
+    titleController.clear();
+    contentController.clear();
+    selectedPostType = 'Text';
+    pickedImage = null;
     update();
-    Get.snackbar(
-      "Deleted",
-      "Post has been removed successfully",
-      snackPosition: SnackPosition.BOTTOM,
-    );
   }
 
-  void editPost(int index) {
-    print("Editing post at index: $index");
+
+
+  Future<void> deletePost(int id) async {
+    AwesomeDialog(
+      context: Get.context!,
+      dialogType: DialogType.warning,
+      animType: AnimType.bottomSlide,
+      title: 'Confirm Delete',
+      desc: 'Are you sure you want to delete this mentor post?',
+      btnCancelOnPress: () {},
+      btnOkOnPress: () async {
+        try {
+          final success = await _provider.deleteMentorPost(id);
+          if (success) {
+            posts.removeWhere((element) => element.id == id);
+            update();
+            Get.snackbar(
+              "Success", 
+              "Post deleted successfully!",
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.green.withOpacity(0.8),
+              colorText: Colors.white,
+            );
+          }
+        } catch (e) {
+          Get.snackbar("Error", e.toString());
+        }
+      },
+    ).show();
+  }
+
+  void editPost(MentorPost post) {
+    // To be implemented
   }
 
   @override
