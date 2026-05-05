@@ -56,7 +56,7 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 40),
-                  
+
                   // Email Field
                   _buildTextField(
                     hint: "Email address",
@@ -64,7 +64,7 @@ class SignInScreen extends StatelessWidget {
                     textController: controller.emailController,
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Password Field
                   _buildTextField(
                     hint: "Password",
@@ -72,17 +72,21 @@ class SignInScreen extends StatelessWidget {
                     isPassword: true,
                     textController: controller.passwordController,
                   ),
-                   Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          Obx(() => Checkbox(
-                                value: controller.isRememberMe.value,
-                                onChanged: (val) => controller.toggleRememberMe(),
-                                activeColor: const Color(0xFF7B61FF),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                              )),
+                          Obx(
+                            () => Checkbox(
+                              value: controller.isRememberMe.value,
+                              onChanged: (val) => controller.toggleRememberMe(),
+                              activeColor: const Color(0xFF7B61FF),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ),
                           const Text(
                             "Remember Me",
                             style: TextStyle(
@@ -93,50 +97,47 @@ class SignInScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          "Forgot Password?",
-                          style: TextStyle(
-                            color: Color(0xFF7B61FF),
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
-                  
-                  Obx(() => ElevatedButton(
-                    onPressed: controller.isLoading.value ? null : () {
-                      controller.login();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF7B61FF),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 4,
-                      shadowColor: const Color(0xFF7B61FF).withOpacity(0.5),
-                    ),
-                    child: controller.isLoading.value 
-                      ? const SizedBox(
-                          height: 20, width: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                        )
-                      : const Text(
-                          "Sign In",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            fontFamily: 'Inter',
-                          ),
+
+                  Obx(
+                    () => ElevatedButton(
+                      onPressed: controller.isLoading.value
+                          ? null
+                          : () {
+                              controller.login();
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF7B61FF),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                  )),
-                  
+                        elevation: 4,
+                        shadowColor: const Color(0xFF7B61FF).withOpacity(0.5),
+                      ),
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text(
+                              "Sign In",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                                fontFamily: 'Inter',
+                              ),
+                            ),
+                    ),
+                  ),
+
                   const SizedBox(height: 32),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -188,7 +189,10 @@ class SignInScreen extends StatelessWidget {
         prefixIcon: Icon(icon, color: Colors.grey.shade500, size: 20),
         filled: true,
         fillColor: Colors.white.withOpacity(0.9),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 20,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),

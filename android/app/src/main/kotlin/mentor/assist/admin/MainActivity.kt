@@ -1,4 +1,4 @@
-package com.example.flutter_widgets
+package mentor.assist.admin
 
 import io.flutter.embedding.android.FlutterActivity
 

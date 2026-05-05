@@ -87,23 +87,11 @@ class ProductController extends GetxController {
 
   List<dynamic> get productsList => fetchedProducts;
 
-  String selectedProductSize = "S, M, L";
-  String selectedColorSize = "Black, Blue";
   String formSelectedCategory = "";
-  String selectedQuality = "Premium";
   
-    final List<String> availableSizes = ["S", "M", "L", "XL", "XXL", "38", "40", "42", "44", "46", "Free Size"];
-  String selectedSize = "M";
-
-  void updateSize(String value) {
-    selectedSize = value;
-    update();
-  }
-
   final productNameController = TextEditingController();
-  final materialController = TextEditingController();
   final productDescriptionController = TextEditingController();
-  final colorController = TextEditingController();
+  final productLinkController = TextEditingController();
 
   bool isSaving = false;
   bool isEdit = false;
@@ -114,17 +102,9 @@ class ProductController extends GetxController {
     isEdit = true;
     editingProductId = product['id'];
     productNameController.text = product['name'] ?? "";
-    materialController.text = product['material'] ?? "";
-    colorController.text = product['color'] ?? "";
     productDescriptionController.text = product['description'] ?? "";
+    productLinkController.text = product['link'] ?? "";
     
-    String sizeValue = product['size']?.toString() ?? "M";
-    if (!availableSizes.contains(sizeValue)) {
-      availableSizes.add(sizeValue);
-    }
-    selectedSize = sizeValue;
-    
-    selectedQuality = product['quality'] ?? "Premium";
     formSelectedCategory = product['category']?['name'] ?? "";
     existingImageUrl = product['image'];
     pickedImage = null;
@@ -136,11 +116,8 @@ class ProductController extends GetxController {
     isEdit = false;
     editingProductId = null;
     productNameController.clear();
-    materialController.clear();
-    colorController.clear();
     productDescriptionController.clear();
-    selectedSize = "M";
-    selectedQuality = "Premium";
+    productLinkController.clear();
     pickedImage = null;
     existingImageUrl = null;
     update();
@@ -156,11 +133,6 @@ class ProductController extends GetxController {
 
   void updateFormCategory(String value) {
     formSelectedCategory = value;
-    update();
-  }
-
-  void updateQuality(String value) {
-    selectedQuality = value;
     update();
   }
 
@@ -196,10 +168,7 @@ class ProductController extends GetxController {
       Map<String, String> fields = {
         "name": productNameController.text,
         "category_id": catObj['id'].toString(),
-        "size": selectedSize,
-        "material": materialController.text,
-        "color": colorController.text,
-        "quality": selectedQuality,
+        "link": productLinkController.text,
         "description": productDescriptionController.text,
         "status": "active",
       };
@@ -269,9 +238,8 @@ class ProductController extends GetxController {
   @override
   void onClose() {
     productNameController.dispose();
-    materialController.dispose();
     productDescriptionController.dispose();
-    colorController.dispose();
+    productLinkController.dispose();
     pickedImage = null;
     super.onClose();
   }

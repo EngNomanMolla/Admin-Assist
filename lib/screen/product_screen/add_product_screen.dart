@@ -91,85 +91,20 @@ class AddProductScreen extends StatelessWidget {
                       
                       const SizedBox(height: 20),
                       
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildLabel("Category"),
-                                _buildDropdown(
-                                  value: controller.formSelectedCategory.isEmpty ? null : controller.formSelectedCategory,
-                                  items: dropdownCategories,
-                                  onChanged: (v) => controller.updateFormCategory(v!),
-                                  hint: "Select",
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildLabel("Size"),
-                                _buildDropdown(
-                                  value: controller.selectedSize,
-                                  items: controller.availableSizes,
-                                  onChanged: (v) => controller.updateSize(v!),
-                                  hint: "Select",
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 24),
-                      _buildSectionTitle("Specifications"),
-                      const SizedBox(height: 16),
-                      
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildLabel("Material"),
-                                _buildTextField(
-                                  controller.materialController,
-                                  hint: "e.g. Cotton",
-                                  icon: Icons.texture_rounded,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildLabel("Color"),
-                                _buildTextField(
-                                  controller.colorController,
-                                  hint: "e.g. Blue",
-                                  icon: Icons.palette_outlined,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 20),
-                      
-                      _buildLabel("Quality Level"),
+                      _buildLabel("Category"),
                       _buildDropdown(
-                        value: controller.selectedQuality,
-                        items: ["Premium", "Standard", "Economy"],
-                        onChanged: (v) => controller.updateQuality(v!),
+                        value: controller.formSelectedCategory.isEmpty ? null : controller.formSelectedCategory,
+                        items: dropdownCategories,
+                        onChanged: (v) => controller.updateFormCategory(v!),
+                        hint: "Select",
                       ),
-
+                      const SizedBox(height: 20),
+                      _buildLabel("Product Link"),
+                      _buildTextField(
+                        controller.productLinkController,
+                        hint: "e.g. https://example.com/product",
+                        icon: Icons.link_rounded,
+                      ),
                       const SizedBox(height: 24),
                       _buildSectionTitle("Media & Description"),
                       const SizedBox(height: 16),
